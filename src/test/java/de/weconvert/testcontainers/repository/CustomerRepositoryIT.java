@@ -4,8 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,14 +23,6 @@ class CustomerRepositoryIT extends CentralPostgresqlContainer {
 	@Autowired
 	private CustomerRepository customerRepository;
 
-	@BeforeEach
-	void setUp() {
-		customerRepository.deleteAll();
-		customerRepository.save(Customer.builder().firstName("Martin").lastName("Klausen").build());
-		customerRepository.save(Customer.builder().firstName("Nancy").lastName("Müller").build());
-		customerRepository.save(Customer.builder().firstName("Karl").lastName("Vogel").build());
-	}
-	
 	@Test
 	void findAll() {
 		List<Customer> customerList = customerRepository.findAll();
@@ -44,7 +37,22 @@ class CustomerRepositoryIT extends CentralPostgresqlContainer {
 		assertThat(customerList).hasSize(1);
 		assertEquals(customer.getFirstName(), "Martin");
 		assertEquals(customer.getLastName(), "Klausen");
+	}
 	
+	@Test
+	void insertAndDeleteCustomer() {
+		Customer customer = new Customer(UUID.randomUUID().toString(), "Hauke", "Sach");
+		Customer savedCustomer = this.customerRepository.save(customer);
+		
+		Optional<Customer> customerOpt = customerRepository.findById(savedCustomer.getId());
+		assertEquals(customerOpt.isPresent(), true);
+		
+		Customer foundCustomer = customerOpt.get();
+		assertEquals(savedCustomer.getId(), foundCustomer.getId());
+		assertEquals(savedCustomer.getFirstName(), foundCustomer.getFirstName());
+		assertEquals(savedCustomer.getLastName(), foundCustomer.getLastName());
+		
+		this.customerRepository.delete(foundCustomer);
 	}
 
 }

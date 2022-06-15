@@ -8,10 +8,11 @@ public class CentralPostgresqlContainer {
 
     private static final String IMAGE_VERSION = "postgres:9.5.25";
 
-    public static final PostgreSQLContainer POSTGRESQL_CONTAINER;
+    public static final PostgreSQLContainer<?> POSTGRESQL_CONTAINER;
 
     static {
-        POSTGRESQL_CONTAINER = new PostgreSQLContainer(IMAGE_VERSION);
+        POSTGRESQL_CONTAINER = new PostgreSQLContainer(IMAGE_VERSION).withUsername("postgres");
+        POSTGRESQL_CONTAINER.withInitScript("test/testcontainer.sql");
         POSTGRESQL_CONTAINER.start();
     }
     

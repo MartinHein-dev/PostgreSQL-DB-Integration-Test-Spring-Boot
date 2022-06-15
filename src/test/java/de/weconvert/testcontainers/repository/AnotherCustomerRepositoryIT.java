@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,18 +21,21 @@ class AnotherCustomerRepositoryIT extends CentralPostgresqlContainer {
 	@Autowired
 	private CustomerRepository customerRepository;
 
-	@BeforeEach
-	void setUp() {
-		customerRepository.deleteAll();
-		customerRepository.save(Customer.builder().firstName("Martin").lastName("Klausen").build());
-		customerRepository.save(Customer.builder().firstName("Nancy").lastName("Müller").build());
-		customerRepository.save(Customer.builder().firstName("Karl").lastName("Vogel").build());
-	}
+//	@BeforeEach
+//	void setUp() {
+//		customerRepository.deleteAll();
+//		customerRepository.save(new Customer("123", "Martin", "Klausen"));
+//		customerRepository.save(new Customer("456", "Nancy", "Müller"));
+//		customerRepository.save(new Customer("789", "Karl", "Vogel"));
+//	}
 	
 	@Test
 	void findAll() {
 		List<Customer> customerList = customerRepository.findAll();
 		assertThat(customerList).hasSize(3);
+		customerList.forEach(c -> {
+			System.out.println(c.getFirstName() + " " + c.getLastName());
+		});
 	}
 
 	@Test
